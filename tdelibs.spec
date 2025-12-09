@@ -1,6 +1,22 @@
-#
-# Please submit bugfixes or comments via http://www.trinitydesktop.org/
-#
+%bcond clang 1
+%bcond gamin 1
+%bcond pcre 1
+%bcond inotify 1
+%bcond hspell 1
+%bcond jasper 1
+%bcond avahi 1
+%bcond openexr 1
+%bcond lzma 1
+%bcond xrandr 1
+%bcond nm 1
+%bcond tdehwlib 1
+%bcond udisks2 1
+%bcond upower 1
+%bcond systemd 1
+%bcond elficon 0
+%bcond xcomposite 1
+%bcond xt 1
+%bcond sudo 1
 
 # BUILD WARNING:
 #  Remove qt-devel and qt3-devel and any kde*-devel on your system !
@@ -12,6 +28,8 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
+%define pkg_rel 3
+
 %define tde_pkg tdelibs
 %define tde_prefix /opt/trinity
 %define tde_bindir %{tde_prefix}/bin
@@ -25,33 +43,26 @@
 %define tde_tdeincludedir %{tde_includedir}/tde
 %define tde_tdelibdir %{tde_libdir}/trinity
 
-%if 0%{?mdkversion}
 # breaks desktop files when not defined
 %define dont_fix_xdg 1
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
 %define _disable_rebuild_configure 1
-%endif
 
 # fixes error: Empty %files file …/debugsourcefiles.list
 %define _debugsource_template %{nil}
 
 %define tarball_name %{tde_pkg}-trinity
-%global toolchain %(readlink /usr/bin/cc)
 
 
 Name:			trinity-%{tde_pkg}
 Version:		%{tde_version}
-Release:		%{?!preversion:2}%{?preversion:0_%{preversion}}%{?dist}
+Release:		%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
 Summary:		TDE Libraries
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
 
-%if 0%{?suse_version}
-License:		GPL-2.0+
-%else
 License:		GPLv2+
-%endif
 
 #Vendor:			Trinity Desktop
 #Packager:		Francois Andriot <francois.andriot@free.fr>
@@ -61,7 +72,50 @@ Prefix:			%{tde_prefix}
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
-BuildRequires:  cmake make
+BuildSystem:  cmake
+BuildOption:  -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:  -DCMAKE_SKIP_RPATH=OFF
+BuildOption:  -DCMAKE_SKIP_INSTALL_RPATH=OFF
+BuildOption:  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
+BuildOption:  -DCMAKE_INSTALL_RPATH="%{tde_libdir}"
+BuildOption:  -DCMAKE_NO_BUILTIN_CHRPATH=ON
+BuildOption:  -DWITH_GCC_VISIBILITY=ON
+BuildOption:  -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
+BuildOption:  -DBIN_INSTALL_DIR="%{tde_bindir}"
+BuildOption:  -DCONFIG_INSTALL_DIR="%{tde_confdir}"
+BuildOption:  -DDOC_INSTALL_DIR="%{tde_docdir}"
+BuildOption:  -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}"
+BuildOption:  -DLIB_INSTALL_DIR="%{tde_libdir}"
+BuildOption:  -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig"
+BuildOption:  -DSHARE_INSTALL_PREFIX="%{tde_datadir}" \
+BuildOption:  -DWITH_ALL_OPTIONS=ON -DWITH_ARTS=ON -DWITH_ALSA=ON
+BuildOption:  -DWITH_LIBART=ON -DWITH_LIBIDN=ON -DWITH_SSL=ON
+BuildOption:  -DWITH_CUPS=ON -DWITH_LUA=OFF -DWITH_TIFF=ON 
+BuildOption:  -DWITH_UTEMPTER=ON
+BuildOption:  -DWITH_UDEVIL=OFF -DWITH_CONSOLEKIT=ON
+BuildOption:  -DWITH_OLD_XDG_STD=OFF -DWITH_PCSC=ON
+BuildOption:  -DWITH_PKCS=ON -DWITH_CRYPTSETUP=ON
+BuildOption:  -DWITH_LIBBFD=OFF -DWITH_KDE4_MENU_SUFFIX=OFF
+BuildOption:  -DWITH_ASPELL=ON -DWITH_TDEICONLOADER_DEBUG=OFF
+BuildOption:  -DCMAKE_POLICY_DEFAULT_CMP0109=NEW
+%{?!with_jasper:BuildOption:  -DWITH_JASPER=OFF}
+%{?!with_openexr:BuildOption:  -DWITH_OPENEXR=OFF}
+%{?!with_avahi:BuildOption:  -DWITH_AVAHI=OFF}
+%{?!with_elficon:BuildOption:  -DWITH_ELFICON=OFF}
+%{?!with_pcre:BuildOption:  -DWITH_PCRE=OFF}
+%{?!with_inotify:BuildOption:  -DWITH_INOTIFY=OFF}
+%{?!with_gamin:BuildOption:  -DWITH_GAMIN=OFF}
+%{?!with_tdehwlib:BuildOption:  -DWITH_TDEHWLIB=OFF}
+%{?!with_tdehwlib:BuildOption:  -DWITH_TDEHWLIB_DAEMONS=OFF}
+%{?with_systemd:BuildOption:  -DWITH_LOGINDPOWER=ON}
+%{?!with_upower:BuildOption:  -DWITH_UPOWER=OFF}
+%{?!with_udisks2:BuildOption:  -DWITH_UDISKS2=OFF}
+%{?with_nm:BuildOption:  -DWITH_NETWORK_MANAGER_BACKEND=ON}
+%{?with_sudo:BuildOption:  -DWITH_SUDO_TDESU_BACKEND=ON}
+%{?!with_lzma:BuildOption:  -DWITH_LZMA=OFF}
+%{?!with_xrandr:BuildOption:  -DWITH_XRANDR=OFF}
+%{?with_xcomposite:BuildOption:  -DWITH_XCOMPOSITE=ON}
+%{?!with_hspell:BuildOption:  -DWITH_HSPELL=OFF}
 
 Obsoletes:		tdelibs < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:		tdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -70,10 +124,6 @@ Provides:		trinity-kdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:		trinity-kdelibs-apidocs < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:		trinity-kdelibs-apidocs = %{?epoch:%{epoch}:}%{version}-%{release}
 
-# for set_permissions macro
-%if 0%{?suse_version}
-PreReq: permissions
-%endif
 
 # Trinity dependencies
 BuildRequires:	libtqt4-devel = %{tde_epoch}:4.2.0
@@ -84,27 +134,13 @@ BuildRequires:	trinity-filesystem >= %{tde_version}
 
 Requires:		trinity-arts >= %{tde_epoch}:1.5.10
 Requires:		trinity-filesystem >= %{tde_version}
-# %if 0%{?mgaversion} >= 6
-# %else
-# Requires:		fileshareset >= 2.0
-# %endif
 
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
-%if "%{?toolchain}" != "clang"
-BuildRequires:	gcc-c++
-%endif
+
+%{!?with_clang:BuildRequires:	gcc-c++}
+
 BuildRequires:	pkgconfig
 BuildRequires:	fdupes
-
-# SUSE desktop files utility
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
-%endif
-
-%if 0%{?opensuse_bs} && 0%{?suse_version}
-# for xdg-menu script
-BuildRequires:	brp-check-trinity
-%endif
 
 # KRB5 support
 BuildRequires:	pkgconfig(krb5)
@@ -144,137 +180,69 @@ BuildRequires:  aspell
 BuildRequires:	aspell-devel
 
 # GAMIN support
-#  Not on openSUSE.
-%if 0%{!?suse_version}
-%define with_gamin 1
-BuildRequires:	pkgconfig(gamin)
-%endif
+%{?with_gamin:BuildRequires:	pkgconfig(gamin)}
 
 # PCRE support
-%define with_pcre 1
-BuildRequires:  pkgconfig(libpcre)
+%{?with_pcre:BuildRequires:  pkgconfig(libpcre)}
 
 # PCRE2 support
 BuildRequires:  pkgconfig(libpcre2-posix)
-
-# INOTIFY support
-# implied
-%define with_inotify 1
 
 # BZIP2 support
 BuildRequires:  pkgconfig(bzip2)
 
 # UTEMPTER support
-%if 0%{?mgaversion} || 0%{?mdkversion} || 0%{?pclinuxos}
 BuildRequires:	%{_lib}utempter-devel
-%endif
-%if 0%{?rhel} >=5 || 0%{?fedora}
-BuildRequires:	libutempter-devel
-%endif
-%if 0%{?rhel} == 4
-BuildRequires:	utempter
-%endif
-%if 0%{?suse_version} && 0%{?suse_version} < 1699
-BuildRequires:	utempter-devel
-%endif
-
 
 # HSPELL support
-%if 0%{!?suse_version}
-%define with_hspell 1
-BuildRequires:	hspell-devel
-%endif
+%{?with_hspell:BuildRequires:	hspell-devel}
 
 # JASPER support
-%define with_jasper 1
-BuildRequires:  pkgconfig(jasper)
+%{?with_jasper:BuildRequires:  pkgconfig(jasper)}
 
 # AVAHI support
-%define with_avahi 1
+%if %{with avahi}
 BuildRequires:	pkgconfig(avahi-client)
 BuildRequires:  trinity-avahi-tqt-devel
+%endif
 
 # OPENEXR support
-%define with_openexr 1
-BuildRequires:	pkgconfig(OpenEXR)
+%{?with_openexr:BuildRequires:	pkgconfig(OpenEXR)}
 
 # LIBTOOL
-%if 0%{?mgaversion} || 0%{?mdkversion} || 0%{?pclinuxos}
 BuildRequires:	libtool-devel
-%endif
-%if 0%{?rhel} >= 5 || 0%{?fedora} || 0%{?suse_version} >= 1220
-BuildRequires:	libtool-ltdl-devel
-%endif
 
 # X11 support
 BuildRequires:  pkgconfig(x11)
 
 # ICEAUTH
-%if 0%{?fedora} >= 34 || 0%{?mdkversion} || 0%{?mgaversion} || 0%{?pclinuxos} || 0%{?rhel} >= 9 || 0%{?suse_version} >= 1220
 Requires:		iceauth
 BuildRequires:	iceauth
-%endif
 
 # Xorg
-%if 0%{?rhel} >= 5 || ( 0%{?fedora} && 0%{?fedora} <= 33 )
-Requires:		xorg-x11-server-utils
-BuildRequires:	xorg-x11-server-utils
-%endif
-%if 0%{?rhel} == 4
-Requires:		xorg-x11
-BuildRequires:	xorg-x11
-%endif
+BuildRequires:  pkgconfig(xorg-server)
 
 # XFT support
 BuildRequires:  pkgconfig(xft)
 
 # XZ support
-%define with_lzma 1
-BuildRequires:	pkgconfig(liblzma)
+%{?with_lzma:BuildRequires:	pkgconfig(liblzma)}
 
 # Certificates support
 BuildRequires:	ca-certificates
 Requires:       openssl
-%if 0%{?fedora} >= 20 || 0%{?rhel} >= 6
-%define	cacert	%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
-%endif
-%if 0%{?fedora} == 18 || 0%{?fedora} == 19
-%define	cacert	%{_sysconfdir}/ssl/certs/ca-certificates.crt
-%endif
 
-%if 0%{?mgaversion} || 0%{?mdkversion} || 0%{?mdkver} || 0%{?pclinuxos}
-%if 0%{?pclinuxos} || 0%{?mgaversion} >= 8 || 0%{?mdkver} || 0%{?pclinuxos}
 Requires:		rootcerts
 %define	cacert	%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
-%else
-%define	cacert	%{_sysconfdir}/ssl/certs/ca-bundle.crt
-Requires:		openssl
-%endif
-%endif
-
-%if 0%{?rhel} == 5
-%define	cacert	%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
-Requires:		openssl
-%endif
-
-%if 0%{?suse_version}
-%define cacert	%{_sysconfdir}/ssl/ca-bundle.pem
-%endif
-%if "%{cacert}" != ""
-Requires:		%{cacert}
-%endif
 
 # XRANDR support
-#  On RHEL5, xrandr library is too old.
-# implied
-%define with_xrandr 1
-BuildRequires:  pkgconfig(xrandr)
+%{?with_xrandr:BuildRequires:  pkgconfig(xrandr)}
 
 # XCOMPOSITE support
-BuildRequires:  pkgconfig(xcomposite)
+%{?with_xcomposite:BuildRequires:  pkgconfig(xcomposite)}
 
 # XT support
-BuildRequires:  pkgconfig(xt)
+%{?with_xt:BuildRequires:  pkgconfig(xt)}
 
 ### New features in TDE R14
 
@@ -282,44 +250,16 @@ BuildRequires:  pkgconfig(xt)
 BuildRequires:  pkgconfig(libmagic)
 
 # NETWORKMANAGER support
-%define with_nm 1
-BuildRequires:  pkgconfig(libnm)
+%{?with_nm:BuildRequires:  pkgconfig(libnm)}
 
 # UDEV support
-%define with_tdehwlib 1
-BuildRequires:  pkgconfig(udev)
-
-
-# HAL support
-%if 0%{?rhel} == 5
-%define with_hal 1
-%endif
-
-# UDISKS support
-%if 0%{?rhel} == 6
-%define with_udisks 1
-BuildRequires:	udisks-devel
-Requires:		udisks
-%endif
+%{?with_tdehwlib:BuildRequires:  pkgconfig(udev)}
 
 # UDISKS2 support
-%define with_udisks2 1
-BuildRequires:  pkgconfig(udisks2)
-
-# DEVICEKIT POWER support
-%if 0%{?rhel} == 6
-%define with_devkitpower 1
-Requires:		DeviceKit-power
-%endif
+%{?with_udisks2:BuildRequires:  pkgconfig(udisks2)}
 
 # UPOWER support
-%define with_upower 1
-BuildRequires:  pkgconfig(upower-glib)
-
-# SYSTEMD support
-%if 0%{?fedora} || 0%{?suse_version} || 0%{?mdkversion} || 0%{?mgaversion} || 0%{?rhel} >= 7
-%define with_systemd 1
-%endif
+%{?with_upower:BuildRequires:  pkgconfig(upower-glib)}
 
 # PCSCLITE support
 BuildRequires:	pkgconfig(libpcsclite)
@@ -335,10 +275,7 @@ BuildRequires:	pkgconfig(libcryptsetup)
 
 # ELFICON support
 # TODO - decide what needs this support and fix the condition
-%if 0%{!?mdkversion}
-%define with_elficon 1
-BuildRequires:		libr-devel >= 0.6.0
-%endif
+%{?with_elficon:BuildRequires:		libr-devel >= 0.6.0}
 
 # ATTR support
 BuildRequires: pkgconfig(libattr)
@@ -371,7 +308,7 @@ kimgio (image manipulation).
 %{tde_bindir}/dcopserver
 %{tde_bindir}/dcopserver_shutdown
 %{tde_bindir}/dcopstart
-%{tde_bindir}/imagetops
+# %{tde_bindir}/imagetops
 %{tde_bindir}/tdeab2tdeabc
 %{tde_bindir}/kaddprinterwizard
 %{tde_bindir}/tdebuildsycoca
@@ -398,9 +335,7 @@ kimgio (image manipulation).
 %{tde_bindir}/tdeioslave
 %{tde_bindir}/tdeiso_info
 %{tde_bindir}/tdelauncher
-%if 0%{?with_elficon}
-%{tde_bindir}/tdelfeditor
-%endif
+%{?with_elficon:%{tde_bindir}/tdelfeditor}
 %{tde_bindir}/tdemailservice
 %{tde_bindir}/tdemimelist
 %{tde_bindir}/tdesendbugmail
@@ -443,15 +378,9 @@ kimgio (image manipulation).
 %config(noreplace) %{tde_confdir}
 
 # Some setuid binaries need special care
-%if 0%{?suse_version}
-%verify(not mode) %{tde_bindir}/kgrantpty
-%verify(not mode) %{tde_bindir}/kpac_dhcp_helper
-%verify(not mode) %{tde_bindir}/start_tdeinit
-%else
 %attr(4755,root,root) %{tde_bindir}/kgrantpty
 %attr(4755,root,root) %{tde_bindir}/kpac_dhcp_helper
 %attr(4711,root,root) %{tde_bindir}/start_tdeinit
-%endif
 
 %config %{_sysconfdir}/xdg/menus/tde-applications.menu
 %config %{_sysconfdir}/xdg/menus/tde-applications.menu-no-kde
@@ -466,16 +395,6 @@ kimgio (image manipulation).
 if [ -d "%{tde_datadir}/locale/all_languages" ]; then
   rm -rf "%{tde_datadir}/locale/all_languages"
 fi
-
-%post
-%if 0%{?suse_version}
-# Sets permissions on setuid files (openSUSE specific)
-%set_permissions %{tde_bindir}/kgrantpty
-%set_permissions %{tde_bindir}/kpac_dhcp_helper
-%set_permissions %{tde_bindir}/start_tdeinit
-%endif
-
-##########
 
 %package devel
 Summary:	TDE Libraries (Development files)
@@ -493,8 +412,8 @@ Requires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
 Requires:	pkgconfig(libart-2.0)
 Requires:	pkgconfig(libattr)
 Requires:	intltool
-%{?xcomposite_devel:Requires: pkgconfig(xcomposite)}
-%{?xt_devel:Requires: pkgconfig(xt)}
+%{?with_xcomposite:Requires: pkgconfig(xcomposite)}
+%{?with_xt:Requires: pkgconfig(xt)}
 
 %description devel
 This package includes the header files you will need to compile
@@ -515,113 +434,17 @@ applications for TDE.
 %{tde_datadir}/cmake/tdelibs.cmake
 %{tde_libdir}/pkgconfig/tdelibs.pc
 
-##########
-
-%if 0%{?suse_version} && 0%{?opensuse_bs} == 0
-%debug_package
-%endif
-
-##########
 
 %prep
 %autosetup -n %{tarball_name}-%{version}%{?preversion:~%{preversion}}
 
-# RHEL 5: remove tdehwlib stuff from include files, to avoid FTBFS in tdebindings
-%if 0%{?rhel} == 5
-%__sed -i "tdecore/kinstance.h" \
-       -i "tdecore/tdeglobal.h" \
-       -e "/#ifdef __TDE_HAVE_TDEHWLIB/,/#endif/d"
-%endif
-
-
-%build
+%conf -p
 unset QTDIR QTINC QTLIB
 export PATH="%{tde_bindir}:${PATH}"
 export PKG_CONFIG_PATH="%{tde_libdir}/pkgconfig"
-
-if [ -d "/usr/X11R6" ]; then
-  export RPM_OPT_FLAGS="${RPM_OPT_FLAGS} -L/usr/X11R6/%{_lib} -I/usr/X11R6/include"
-fi
-
 export TDEDIR="%{tde_prefix}"
 
-if ! rpm -E %%cmake|grep -e 'cd build\|cd ${CMAKE_BUILD_DIR:-build}'; then
-  %__mkdir_p build
-  cd build
-fi
-
-%cmake \
-  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-  -DCMAKE_C_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_CXX_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_SKIP_RPATH=OFF \
-  -DCMAKE_SKIP_INSTALL_RPATH=OFF \
-  -DCMAKE_INSTALL_RPATH="%{tde_libdir}" \
-  -DCMAKE_NO_BUILTIN_CHRPATH=ON \
-  -DCMAKE_VERBOSE_MAKEFILE=ON \
-  -DWITH_GCC_VISIBILITY=ON \
-  \
-  -DCMAKE_INSTALL_PREFIX="%{tde_prefix}" \
-  -DBIN_INSTALL_DIR="%{tde_bindir}" \
-  -DCONFIG_INSTALL_DIR="%{tde_confdir}" \
-  -DDOC_INSTALL_DIR="%{tde_docdir}" \
-  -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}" \
-  -DLIB_INSTALL_DIR="%{tde_libdir}" \
-  -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig" \
-  -DSHARE_INSTALL_PREFIX="%{tde_datadir}" \
-  \
-  -DWITH_ALL_OPTIONS=ON \
-  -DWITH_ARTS=ON \
-  -DWITH_ALSA=ON \
-  -DWITH_LIBART=ON \
-  -DWITH_LIBIDN=ON \
-  -DWITH_SSL=ON \
-  -DWITH_CUPS=ON \
-  -DWITH_LUA=OFF \
-  -DWITH_TIFF=ON \
-  %{?!with_jasper:-DWITH_JASPER=OFF} \
-  %{?!with_openexr:-DWITH_OPENEXR=OFF} \
-  -DWITH_UTEMPTER=ON \
-  %{?!with_avahi:-DWITH_AVAHI=OFF} \
-  %{?!with_elficon:-DWITH_ELFICON=OFF} \
-  %{?!with_pcre:-DWITH_PCRE=OFF} \
-  %{?!with_inotify:-DWITH_INOTIFY=OFF} \
-  %{?!with_gamin:-DWITH_GAMIN=OFF} \
-  %{?!with_tdehwlib:-DWITH_TDEHWLIB=OFF} \
-  %{?!with_tdehwlib:-DWITH_TDEHWLIB_DAEMONS=OFF} \
-  %{?with_hal:-DWITH_HAL=ON} \
-  %{?with_devkitpower:-DWITH_DEVKITPOWER=ON} \
-  %{?with_systemd:-DWITH_LOGINDPOWER=ON} \
-  %{?!with_upower:-DWITH_UPOWER=OFF} \
-  %{?!with_udisks:-DWITH_UDISKS=OFF} \
-  %{?!with_udisks2:-DWITH_UDISKS2=OFF} \
-  -DWITH_UDEVIL=OFF \
-  -DWITH_CONSOLEKIT=ON \
-  %{?with_nm:-DWITH_NETWORK_MANAGER_BACKEND=ON} \
-  -DWITH_SUDO_TDESU_BACKEND=OFF \
-  -DWITH_OLD_XDG_STD=OFF \
-  -DWITH_PCSC=ON \
-  -DWITH_PKCS=ON \
-  -DWITH_CRYPTSETUP=ON \
-  %{?!with_lzma:-DWITH_LZMA=OFF} \
-  -DWITH_LIBBFD=OFF \
-  %{?!with_xrandr:-DWITH_XRANDR=OFF} \
-  -DWITH_XCOMPOSITE=ON \
-  -DWITH_KDE4_MENU_SUFFIX=OFF \
-  \
-  -DWITH_ASPELL=ON \
-  %{?!with_hspell:-DWITH_HSPELL=OFF} \
-  -DWITH_TDEICONLOADER_DEBUG=OFF \
-%if 0%{?mdkversion}
-  -DCMAKE_POLICY_DEFAULT_CMP0109=NEW \
-%endif
-  ..
-
-%__make %{?_smp_mflags} || %__make
-
-
-%install
-%__make install DESTDIR="%{?buildroot}" -C build
+%install -a
 
 # Use system-wide CA certificates
 %if "%{?cacert}" != ""
@@ -632,11 +455,6 @@ fi
 # Symlinks duplicate files (mostly under 'ksgmltools2')
 %fdupes -s "%{?buildroot}"
 
-# Fix 'tderesources.desktop' (openSUSE only)
-%if 0%{?suse_version}
-%suse_update_desktop_file -r tderesources Qt X-TDE-settings-desktop
-%endif
-
 # Remove setuid bit on some binaries.
 chmod 0755 "%{?buildroot}%{tde_bindir}/kgrantpty"
 chmod 0755 "%{?buildroot}%{tde_bindir}/kpac_dhcp_helper"
@@ -646,14 +464,4 @@ chmod 0755 "%{?buildroot}%{tde_bindir}/start_tdeinit"
 # Remove integrated fileshareset 1.0 .
 %__rm -f "%{?buildroot}%{tde_bindir}/filesharelist"
 %__rm -f "%{?buildroot}%{tde_bindir}/fileshareset"
-
-
-
-%if 0%{?suse_version}
-# Check permissions on setuid files (openSUSE specific)
-%verifyscript
-%verify_permissions -e %{tde_bindir}/kgrantpty
-%verify_permissions -e %{tde_bindir}/kpac_dhcp_helper
-%verify_permissions -e %{tde_bindir}/start_tdeinit
-%endif
 
