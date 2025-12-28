@@ -28,20 +28,10 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 3
+%define pkg_rel 4
 
 %define tde_pkg tdelibs
-%define tde_prefix /opt/trinity
-%define tde_bindir %{tde_prefix}/bin
-%define tde_confdir %{_sysconfdir}/trinity
-%define tde_datadir %{tde_prefix}/share
-%define tde_docdir %{tde_datadir}/doc
-%define tde_includedir %{tde_prefix}/include
-%define tde_libdir %{tde_prefix}/%{_lib}
-%define tde_tdeappdir %{tde_datadir}/applications/tde
-%define tde_tdedocdir %{tde_docdir}/tde
-%define tde_tdeincludedir %{tde_includedir}/tde
-%define tde_tdelibdir %{tde_libdir}/trinity
+
 
 # breaks desktop files when not defined
 %define dont_fix_xdg 1
@@ -67,7 +57,7 @@ License:		GPLv2+
 #Vendor:			Trinity Desktop
 #Packager:		Francois Andriot <francois.andriot@free.fr>
 
-Prefix:			%{tde_prefix}
+Prefix:			/opt/trinity
 
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
@@ -77,17 +67,12 @@ BuildOption:  -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 BuildOption:  -DCMAKE_SKIP_RPATH=OFF
 BuildOption:  -DCMAKE_SKIP_INSTALL_RPATH=OFF
 BuildOption:  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-BuildOption:  -DCMAKE_INSTALL_RPATH="%{tde_libdir}"
+BuildOption:  -DCMAKE_INSTALL_RPATH="%{prefix}/%{_lib}"
 BuildOption:  -DCMAKE_NO_BUILTIN_CHRPATH=ON
-BuildOption:  -DWITH_GCC_VISIBILITY=ON
-BuildOption:  -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
-BuildOption:  -DBIN_INSTALL_DIR="%{tde_bindir}"
-BuildOption:  -DCONFIG_INSTALL_DIR="%{tde_confdir}"
-BuildOption:  -DDOC_INSTALL_DIR="%{tde_docdir}"
-BuildOption:  -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}"
-BuildOption:  -DLIB_INSTALL_DIR="%{tde_libdir}"
-BuildOption:  -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig"
-BuildOption:  -DSHARE_INSTALL_PREFIX="%{tde_datadir}" \
+BuildOption:  -DCMAKE_INSTALL_PREFIX="%{prefix}"
+BuildOption:  -DCONFIG_INSTALL_DIR="%{_sysconfdir}/trinity"
+BuildOption:  -DINCLUDE_INSTALL_DIR="%{prefix}/include/tde"
+BuildOption:  -DPKGCONFIG_INSTALL_DIR="%{prefix}/%{_lib}/pkgconfig"
 BuildOption:  -DWITH_ALL_OPTIONS=ON -DWITH_ARTS=ON -DWITH_ALSA=ON
 BuildOption:  -DWITH_LIBART=ON -DWITH_LIBIDN=ON -DWITH_SSL=ON
 BuildOption:  -DWITH_CUPS=ON -DWITH_LUA=OFF -DWITH_TIFF=ON 
@@ -98,24 +83,25 @@ BuildOption:  -DWITH_PKCS=ON -DWITH_CRYPTSETUP=ON
 BuildOption:  -DWITH_LIBBFD=OFF -DWITH_KDE4_MENU_SUFFIX=OFF
 BuildOption:  -DWITH_ASPELL=ON -DWITH_TDEICONLOADER_DEBUG=OFF
 BuildOption:  -DCMAKE_POLICY_DEFAULT_CMP0109=NEW
-%{?!with_jasper:BuildOption:  -DWITH_JASPER=OFF}
-%{?!with_openexr:BuildOption:  -DWITH_OPENEXR=OFF}
-%{?!with_avahi:BuildOption:  -DWITH_AVAHI=OFF}
-%{?!with_elficon:BuildOption:  -DWITH_ELFICON=OFF}
-%{?!with_pcre:BuildOption:  -DWITH_PCRE=OFF}
-%{?!with_inotify:BuildOption:  -DWITH_INOTIFY=OFF}
-%{?!with_gamin:BuildOption:  -DWITH_GAMIN=OFF}
-%{?!with_tdehwlib:BuildOption:  -DWITH_TDEHWLIB=OFF}
-%{?!with_tdehwlib:BuildOption:  -DWITH_TDEHWLIB_DAEMONS=OFF}
-%{?with_systemd:BuildOption:  -DWITH_LOGINDPOWER=ON}
-%{?!with_upower:BuildOption:  -DWITH_UPOWER=OFF}
-%{?!with_udisks2:BuildOption:  -DWITH_UDISKS2=OFF}
-%{?with_nm:BuildOption:  -DWITH_NETWORK_MANAGER_BACKEND=ON}
-%{?with_sudo:BuildOption:  -DWITH_SUDO_TDESU_BACKEND=ON}
-%{?!with_lzma:BuildOption:  -DWITH_LZMA=OFF}
-%{?!with_xrandr:BuildOption:  -DWITH_XRANDR=OFF}
-%{?with_xcomposite:BuildOption:  -DWITH_XCOMPOSITE=ON}
-%{?!with_hspell:BuildOption:  -DWITH_HSPELL=OFF}
+BuildOption:  -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
+BuildOption:  -DWITH_JASPER=%{!?with_jasper:OFF}%{?with_jasper:ON}
+BuildOption:  -DWITH_OPENEXR=%{!?with_openexr:OFF}%{?with_openexr:ON}
+BuildOption:  -DWITH_AVAHI=%{!?with_avahi:OFF}%{?with_avahi:ON}
+BuildOption:  -DWITH_ELFICON=%{!?with_elficon:OFF}%{?with_elficon:ON}
+BuildOption:  -DWITH_PCRE=%{!?with_pcre:OFF}%{?with_pcre:ON}
+BuildOption:  -DWITH_INOTIFY=%{!?with_inotify:OFF}%{?with_inotify:ON}
+BuildOption:  -DWITH_GAMIN=%{!?with_gamin:OFF}%{?with_gamin:ON}
+BuildOption:  -DWITH_TDEHWLIB=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
+BuildOption:  -DWITH_TDEHWLIB_DAEMONS=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
+BuildOption:  -DWITH_LOGINDPOWER=%{?with_systemd:ON}%{!?with_systemd:OFF}
+BuildOption:  -DWITH_UPOWER=%{!?with_upower:OFF}%{?with_upower:ON}
+BuildOption:  -DWITH_UDISKS2=%{!?with_udisks2:OFF}%{?with_udisks2:ON}
+BuildOption:  -DWITH_NETWORK_MANAGER_BACKEND=%{?with_nm:ON}%{!?with_nm:OFF}
+BuildOption:  -DWITH_SUDO_TDESU_BACKEND=%{?with_sudo:ON}%{!?with_sudo:OFF}
+BuildOption:  -DWITH_LZMA=%{!?with_lzma:OFF}%{?with_lzma:ON}
+BuildOption:  -DWITH_XRANDR=%{!?with_xrandr:OFF}%{?with_xrandr:ON}
+BuildOption:  -DWITH_XCOMPOSITE=%{?with_xcomposite:ON}%{!?with_xcomposite:OFF}
+BuildOption:  -DWITH_HSPELL=%{?!with_hspell:OFF}%{?with_hspell:ON}
 
 Obsoletes:		tdelibs < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:		tdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -296,104 +282,104 @@ kimgio (image manipulation).
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING COPYING-DOCS COPYING.LIB README TODO
-%{tde_bindir}/artsmessage
-%{tde_bindir}/cupsdconf
-%{tde_bindir}/cupsdoprint
-%{tde_bindir}/dcop
-%{tde_bindir}/dcopclient
-%{tde_bindir}/dcopfind
-%{tde_bindir}/dcopobject
-%{tde_bindir}/dcopquit
-%{tde_bindir}/dcopref
-%{tde_bindir}/dcopserver
-%{tde_bindir}/dcopserver_shutdown
-%{tde_bindir}/dcopstart
-# %{tde_bindir}/imagetops
-%{tde_bindir}/tdeab2tdeabc
-%{tde_bindir}/kaddprinterwizard
-%{tde_bindir}/tdebuildsycoca
-%{tde_bindir}/tdecmshell
-%{tde_bindir}/tdeconf_update
-%{tde_bindir}/kcookiejar
-%{tde_bindir}/tde-config
-%{tde_bindir}/tde-menu
-%{tde_bindir}/kded
-%{tde_bindir}/tdeinit
-%{tde_bindir}/tdeinit_shutdown
-%{tde_bindir}/tdeinit_wrapper
-%{tde_bindir}/tdesu_stub
-%{tde_bindir}/kdetcompmgr
-%{tde_bindir}/kdontchangethehostname
-%{tde_bindir}/tdedostartupconfig
-%{tde_bindir}/tdefile
-%{tde_bindir}/kfmexec
-%{tde_bindir}/tdehotnewstuff
-%{tde_bindir}/kinstalltheme
-%{tde_bindir}/tdeio_http_cache_cleaner
-%{tde_bindir}/tdeio_uiserver
-%{tde_bindir}/tdeioexec
-%{tde_bindir}/tdeioslave
-%{tde_bindir}/tdeiso_info
-%{tde_bindir}/tdelauncher
-%{?with_elficon:%{tde_bindir}/tdelfeditor}
-%{tde_bindir}/tdemailservice
-%{tde_bindir}/tdemimelist
-%{tde_bindir}/tdesendbugmail
-%{tde_bindir}/kshell
-%{tde_bindir}/tdestartupconfig
-%{tde_bindir}/tdetelnetservice
-%{tde_bindir}/tdetradertest
-%{tde_bindir}/kwrapper
-%{tde_bindir}/lnusertemp
-%{tde_bindir}/make_driver_db_cups
-%{tde_bindir}/make_driver_db_lpr
-%{tde_bindir}/meinproc
-%{tde_bindir}/networkstatustestservice
-%{tde_bindir}/start_tdeinit_wrapper
-%{tde_bindir}/checkXML
-%{tde_bindir}/ksvgtopng
-%{tde_bindir}/tdeunittestmodrunner
-%{tde_bindir}/preparetips
-%{tde_tdelibdir}/*
-%{tde_libdir}/lib*.so.*
-%{tde_libdir}/libtdeinit_*.la
-%{tde_libdir}/libtdeinit_*.so
-%{tde_datadir}/applications/tde/*.desktop
-%{tde_datadir}/autostart/tdeab2tdeabc.desktop
-%{tde_datadir}/applnk/tdeio_iso.desktop
-%{tde_datadir}/apps/*
-%exclude %{tde_datadir}/apps/ksgmltools2/
-%{tde_datadir}/emoticons/*
-%{tde_datadir}/icons/crystalsvg/
-%{tde_datadir}/icons/default.tde
-%{tde_datadir}/icons/hicolor/index.theme
-%{tde_datadir}/locale/all_languages
-%{tde_datadir}/mimelnk/*/*.desktop
-%{tde_datadir}/services/*
-%{tde_datadir}/servicetypes/*
-%{tde_tdedocdir}/HTML/en/common/*
-%{tde_tdedocdir}/HTML/en/tdespell/
+%{prefix}/bin/artsmessage
+%{prefix}/bin/cupsdconf
+%{prefix}/bin/cupsdoprint
+%{prefix}/bin/dcop
+%{prefix}/bin/dcopclient
+%{prefix}/bin/dcopfind
+%{prefix}/bin/dcopobject
+%{prefix}/bin/dcopquit
+%{prefix}/bin/dcopref
+%{prefix}/bin/dcopserver
+%{prefix}/bin/dcopserver_shutdown
+%{prefix}/bin/dcopstart
+%{prefix}/bin/imagetops
+%{prefix}/bin/tdeab2tdeabc
+%{prefix}/bin/kaddprinterwizard
+%{prefix}/bin/tdebuildsycoca
+%{prefix}/bin/tdecmshell
+%{prefix}/bin/tdeconf_update
+%{prefix}/bin/kcookiejar
+%{prefix}/bin/tde-config
+%{prefix}/bin/tde-menu
+%{prefix}/bin/kded
+%{prefix}/bin/tdeinit
+%{prefix}/bin/tdeinit_shutdown
+%{prefix}/bin/tdeinit_wrapper
+%{prefix}/bin/tdesu_stub
+%{prefix}/bin/kdetcompmgr
+%{prefix}/bin/kdontchangethehostname
+%{prefix}/bin/tdedostartupconfig
+%{prefix}/bin/tdefile
+%{prefix}/bin/kfmexec
+%{prefix}/bin/tdehotnewstuff
+%{prefix}/bin/kinstalltheme
+%{prefix}/bin/tdeio_http_cache_cleaner
+%{prefix}/bin/tdeio_uiserver
+%{prefix}/bin/tdeioexec
+%{prefix}/bin/tdeioslave
+%{prefix}/bin/tdeiso_info
+%{prefix}/bin/tdelauncher
+%{?with_elficon:%{prefix}/bin/tdelfeditor}
+%{prefix}/bin/tdemailservice
+%{prefix}/bin/tdemimelist
+%{prefix}/bin/tdesendbugmail
+%{prefix}/bin/kshell
+%{prefix}/bin/tdestartupconfig
+%{prefix}/bin/tdetelnetservice
+%{prefix}/bin/tdetradertest
+%{prefix}/bin/kwrapper
+%{prefix}/bin/lnusertemp
+%{prefix}/bin/make_driver_db_cups
+%{prefix}/bin/make_driver_db_lpr
+%{prefix}/bin/meinproc
+%{prefix}/bin/networkstatustestservice
+%{prefix}/bin/start_tdeinit_wrapper
+%{prefix}/bin/checkXML
+%{prefix}/bin/ksvgtopng
+%{prefix}/bin/tdeunittestmodrunner
+%{prefix}/bin/preparetips
+%{prefix}/%{_lib}/trinity/*
+%{prefix}/%{_lib}/lib*.so.*
+%{prefix}/%{_lib}/libtdeinit_*.la
+%{prefix}/%{_lib}/libtdeinit_*.so
+%{prefix}/share/applications/tde/*.desktop
+%{prefix}/share/autostart/tdeab2tdeabc.desktop
+%{prefix}/share/applnk/tdeio_iso.desktop
+%{prefix}/share/apps/*
+%exclude %{prefix}/share/apps/ksgmltools2/
+%{prefix}/share/emoticons/*
+%{prefix}/share/icons/crystalsvg/
+%{prefix}/share/icons/default.tde
+%{prefix}/share/icons/hicolor/index.theme
+%{prefix}/share/locale/all_languages
+%{prefix}/share/mimelnk/*/*.desktop
+%{prefix}/share/services/*
+%{prefix}/share/servicetypes/*
+%{prefix}/share/doc/tde/HTML/en/common/*
+%{prefix}/share/doc/tde/HTML/en/tdespell/
 
 # Global Trinity configuration
-%config(noreplace) %{tde_confdir}
+%config(noreplace) %{_sysconfdir}/trinity
 
 # Some setuid binaries need special care
-%attr(4755,root,root) %{tde_bindir}/kgrantpty
-%attr(4755,root,root) %{tde_bindir}/kpac_dhcp_helper
-%attr(4711,root,root) %{tde_bindir}/start_tdeinit
+%attr(4755,root,root) %{prefix}/bin/kgrantpty
+%attr(4755,root,root) %{prefix}/bin/kpac_dhcp_helper
+%attr(4711,root,root) %{prefix}/bin/start_tdeinit
 
 %config %{_sysconfdir}/xdg/menus/tde-applications.menu
 %config %{_sysconfdir}/xdg/menus/tde-applications.menu-no-kde
 
 # DBUS stuff, related to TDE hwlib
-%{tde_bindir}/tde_dbus_hardwarecontrol
+%{prefix}/bin/tde_dbus_hardwarecontrol
 %config %{_sysconfdir}/dbus-1/system.d/org.trinitydesktop.hardwarecontrol.conf
 %{_datadir}/dbus-1/system-services/org.trinitydesktop.hardwarecontrol.service
 
 %pre
 # TDE Bug #1074
-if [ -d "%{tde_datadir}/locale/all_languages" ]; then
-  rm -rf "%{tde_datadir}/locale/all_languages"
+if [ -d "%{prefix}/share/locale/all_languages" ]; then
+  rm -rf "%{prefix}/share/locale/all_languages"
 fi
 
 %package devel
@@ -421,47 +407,44 @@ applications for TDE.
 
 %files devel
 %defattr(-,root,root,-)
-%{tde_bindir}/dcopidl*
-%{tde_bindir}/*config_compiler
-%{tde_bindir}/maketdewidgets
-%{tde_datadir}/apps/ksgmltools2/
-%{tde_tdeincludedir}/*
-%{tde_libdir}/*.la
-%{tde_libdir}/*.so
-%{tde_libdir}/*.a
-%exclude %{tde_libdir}/libtdeinit_*.la
-%exclude %{tde_libdir}/libtdeinit_*.so
-%{tde_datadir}/cmake/tdelibs.cmake
-%{tde_libdir}/pkgconfig/tdelibs.pc
+%{prefix}/bin/dcopidl*
+%{prefix}/bin/*config_compiler
+%{prefix}/bin/maketdewidgets
+%{prefix}/share/apps/ksgmltools2/
+%{prefix}/include/tde/*
+%{prefix}/%{_lib}/*.la
+%{prefix}/%{_lib}/*.so
+%{prefix}/%{_lib}/*.a
+%exclude %{prefix}/%{_lib}/libtdeinit_*.la
+%exclude %{prefix}/%{_lib}/libtdeinit_*.so
+%{prefix}/share/cmake/tdelibs.cmake
+%{prefix}/%{_lib}/pkgconfig/tdelibs.pc
 
-
-%prep
-%autosetup -n %{tarball_name}-%{version}%{?preversion:~%{preversion}}
 
 %conf -p
 unset QTDIR QTINC QTLIB
-export PATH="%{tde_bindir}:${PATH}"
-export PKG_CONFIG_PATH="%{tde_libdir}/pkgconfig"
-export TDEDIR="%{tde_prefix}"
+export PATH="%{prefix}/bin:${PATH}"
+export PKG_CONFIG_PATH="%{prefix}/%{_lib}/pkgconfig"
+export TDEDIR="%{prefix}"
 
 %install -a
 
 # Use system-wide CA certificates
 %if "%{?cacert}" != ""
-%__rm -f "%{?buildroot}%{tde_datadir}/apps/kssl/ca-bundle.crt"
-%__ln_s "%{cacert}" "%{?buildroot}%{tde_datadir}/apps/kssl/ca-bundle.crt"
+%__rm -f "%{?buildroot}%{prefix}/share/apps/kssl/ca-bundle.crt"
+%__ln_s "%{cacert}" "%{?buildroot}%{prefix}/share/apps/kssl/ca-bundle.crt"
 %endif
 
 # Symlinks duplicate files (mostly under 'ksgmltools2')
 %fdupes -s "%{?buildroot}"
 
 # Remove setuid bit on some binaries.
-chmod 0755 "%{?buildroot}%{tde_bindir}/kgrantpty"
-chmod 0755 "%{?buildroot}%{tde_bindir}/kpac_dhcp_helper"
-chmod 0755 "%{?buildroot}%{tde_bindir}/start_tdeinit"
+chmod 0755 "%{?buildroot}%{prefix}/bin/kgrantpty"
+chmod 0755 "%{?buildroot}%{prefix}/bin/kpac_dhcp_helper"
+chmod 0755 "%{?buildroot}%{prefix}/bin/start_tdeinit"
 
 # fileshareset 2.0 is provided separately.
 # Remove integrated fileshareset 1.0 .
-%__rm -f "%{?buildroot}%{tde_bindir}/filesharelist"
-%__rm -f "%{?buildroot}%{tde_bindir}/fileshareset"
+%__rm -f "%{?buildroot}%{prefix}/bin/filesharelist"
+%__rm -f "%{?buildroot}%{prefix}/bin/fileshareset"
 
