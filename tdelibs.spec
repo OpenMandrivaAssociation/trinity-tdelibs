@@ -62,46 +62,53 @@ Prefix:			/opt/trinity
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
-BuildSystem:  cmake
-BuildOption:  -DCMAKE_BUILD_TYPE="RelWithDebInfo"
-BuildOption:  -DCMAKE_SKIP_RPATH=OFF
-BuildOption:  -DCMAKE_SKIP_INSTALL_RPATH=OFF
-BuildOption:  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-BuildOption:  -DCMAKE_INSTALL_RPATH="%{prefix}/%{_lib}"
-BuildOption:  -DCMAKE_NO_BUILTIN_CHRPATH=ON
-BuildOption:  -DCMAKE_INSTALL_PREFIX="%{prefix}"
-BuildOption:  -DCONFIG_INSTALL_DIR="%{_sysconfdir}/trinity"
-BuildOption:  -DINCLUDE_INSTALL_DIR="%{prefix}/include/tde"
-BuildOption:  -DPKGCONFIG_INSTALL_DIR="%{prefix}/%{_lib}/pkgconfig"
-BuildOption:  -DWITH_ALL_OPTIONS=ON -DWITH_ARTS=ON -DWITH_ALSA=ON
-BuildOption:  -DWITH_LIBART=ON -DWITH_LIBIDN=ON -DWITH_SSL=ON
-BuildOption:  -DWITH_CUPS=ON -DWITH_LUA=OFF -DWITH_TIFF=ON 
-BuildOption:  -DWITH_UTEMPTER=ON
-BuildOption:  -DWITH_UDEVIL=OFF -DWITH_CONSOLEKIT=ON
-BuildOption:  -DWITH_OLD_XDG_STD=OFF -DWITH_PCSC=ON
-BuildOption:  -DWITH_PKCS=ON -DWITH_CRYPTSETUP=ON
-BuildOption:  -DWITH_LIBBFD=OFF -DWITH_KDE4_MENU_SUFFIX=OFF
-BuildOption:  -DWITH_ASPELL=ON -DWITH_TDEICONLOADER_DEBUG=OFF
-BuildOption:  -DCMAKE_POLICY_DEFAULT_CMP0109=NEW
-BuildOption:  -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
-BuildOption:  -DWITH_JASPER=%{!?with_jasper:OFF}%{?with_jasper:ON}
-BuildOption:  -DWITH_OPENEXR=%{!?with_openexr:OFF}%{?with_openexr:ON}
-BuildOption:  -DWITH_AVAHI=%{!?with_avahi:OFF}%{?with_avahi:ON}
-BuildOption:  -DWITH_ELFICON=%{!?with_elficon:OFF}%{?with_elficon:ON}
-BuildOption:  -DWITH_PCRE=%{!?with_pcre:OFF}%{?with_pcre:ON}
-BuildOption:  -DWITH_INOTIFY=%{!?with_inotify:OFF}%{?with_inotify:ON}
-BuildOption:  -DWITH_GAMIN=%{!?with_gamin:OFF}%{?with_gamin:ON}
-BuildOption:  -DWITH_TDEHWLIB=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
-BuildOption:  -DWITH_TDEHWLIB_DAEMONS=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
-BuildOption:  -DWITH_LOGINDPOWER=%{?with_systemd:ON}%{!?with_systemd:OFF}
-BuildOption:  -DWITH_UPOWER=%{!?with_upower:OFF}%{?with_upower:ON}
-BuildOption:  -DWITH_UDISKS2=%{!?with_udisks2:OFF}%{?with_udisks2:ON}
-BuildOption:  -DWITH_NETWORK_MANAGER_BACKEND=%{?with_nm:ON}%{!?with_nm:OFF}
-BuildOption:  -DWITH_SUDO_TDESU_BACKEND=%{?with_sudo:ON}%{!?with_sudo:OFF}
-BuildOption:  -DWITH_LZMA=%{!?with_lzma:OFF}%{?with_lzma:ON}
-BuildOption:  -DWITH_XRANDR=%{!?with_xrandr:OFF}%{?with_xrandr:ON}
-BuildOption:  -DWITH_XCOMPOSITE=%{?with_xcomposite:ON}%{!?with_xcomposite:OFF}
-BuildOption:  -DWITH_HSPELL=%{?!with_hspell:OFF}%{?with_hspell:ON}
+# ninja is broken due to import/export of in project libs
+BuildRequires:  make
+
+BuildSystem:    cmake
+
+BuildOption:    -G "Unix Makefiles"
+BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:    -DCMAKE_SKIP_RPATH=OFF
+BuildOption:    -DCMAKE_SKIP_INSTALL_RPATH=OFF
+
+# requires ninja
+#BuildOption:    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
+BuildOption:    -DCMAKE_SKIP_BUILD_RPATH=OFF
+BuildOption:    -DCMAKE_INSTALL_RPATH="%{prefix}/%{_lib}"
+BuildOption:    -DCMAKE_INSTALL_PREFIX="%{prefix}"
+BuildOption:    -DCONFIG_INSTALL_DIR="%{_sysconfdir}/trinity"
+BuildOption:    -DINCLUDE_INSTALL_DIR="%{prefix}/include/tde"
+BuildOption:    -DPKGCONFIG_INSTALL_DIR="%{prefix}/%{_lib}/pkgconfig"
+BuildOption:    -DWITH_ALL_OPTIONS=ON -DWITH_ARTS=ON -DWITH_ALSA=ON
+BuildOption:    -DWITH_LIBART=ON -DWITH_LIBIDN=ON -DWITH_SSL=ON
+BuildOption:    -DWITH_CUPS=ON -DWITH_LUA=OFF -DWITH_TIFF=ON 
+BuildOption:    -DWITH_UTEMPTER=ON
+BuildOption:    -DWITH_UDEVIL=OFF -DWITH_CONSOLEKIT=ON
+BuildOption:    -DWITH_OLD_XDG_STD=OFF -DWITH_PCSC=ON
+BuildOption:    -DWITH_PKCS=ON -DWITH_CRYPTSETUP=ON
+BuildOption:    -DWITH_LIBBFD=OFF -DWITH_KDE4_MENU_SUFFIX=OFF
+BuildOption:    -DWITH_ASPELL=ON -DWITH_TDEICONLOADER_DEBUG=OFF
+BuildOption:    -DCMAKE_POLICY_DEFAULT_CMP0109=NEW
+BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
+BuildOption:    -DWITH_JASPER=%{!?with_jasper:OFF}%{?with_jasper:ON}
+BuildOption:    -DWITH_OPENEXR=%{!?with_openexr:OFF}%{?with_openexr:ON}
+BuildOption:    -DWITH_AVAHI=%{!?with_avahi:OFF}%{?with_avahi:ON}
+BuildOption:    -DWITH_ELFICON=%{!?with_elficon:OFF}%{?with_elficon:ON}
+BuildOption:    -DWITH_PCRE=%{!?with_pcre:OFF}%{?with_pcre:ON}
+BuildOption:    -DWITH_INOTIFY=%{!?with_inotify:OFF}%{?with_inotify:ON}
+BuildOption:    -DWITH_GAMIN=%{!?with_gamin:OFF}%{?with_gamin:ON}
+BuildOption:    -DWITH_TDEHWLIB=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
+BuildOption:    -DWITH_TDEHWLIB_DAEMONS=%{!?with_tdehwlib:OFF}%{?with_tdehwlib:ON}
+BuildOption:    -DWITH_LOGINDPOWER=%{?with_systemd:ON}%{!?with_systemd:OFF}
+BuildOption:    -DWITH_UPOWER=%{!?with_upower:OFF}%{?with_upower:ON}
+BuildOption:    -DWITH_UDISKS2=%{!?with_udisks2:OFF}%{?with_udisks2:ON}
+BuildOption:    -DWITH_NETWORK_MANAGER_BACKEND=%{?with_nm:ON}%{!?with_nm:OFF}
+BuildOption:    -DWITH_SUDO_TDESU_BACKEND=%{?with_sudo:ON}%{!?with_sudo:OFF}
+BuildOption:    -DWITH_LZMA=%{!?with_lzma:OFF}%{?with_lzma:ON}
+BuildOption:    -DWITH_XRANDR=%{!?with_xrandr:OFF}%{?with_xrandr:ON}
+BuildOption:    -DWITH_XCOMPOSITE=%{?with_xcomposite:ON}%{!?with_xcomposite:OFF}
+BuildOption:    -DWITH_HSPELL=%{?!with_hspell:OFF}%{?with_hspell:ON}
 
 Obsoletes:		tdelibs < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:		tdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
