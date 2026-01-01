@@ -28,7 +28,7 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 4
+%define pkg_rel 5
 
 %define tde_pkg tdelibs
 
