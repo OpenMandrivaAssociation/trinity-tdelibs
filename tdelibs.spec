@@ -28,7 +28,7 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 6
+%define pkg_rel 7
 
 %define tde_pkg tdelibs
 
@@ -56,27 +56,14 @@ URL:			http://www.trinitydesktop.org/
 
 License:		GPLv2+
 
-#Vendor:			Trinity Desktop
-#Packager:		Francois Andriot <francois.andriot@free.fr>
-
 
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
-# ninja is broken due to import/export of in project libs
-BuildRequires:  make
-
 BuildSystem:    cmake
 
-BuildOption:    -G "Unix Makefiles"
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 BuildOption:    -DCMAKE_SKIP_RPATH=OFF
-BuildOption:    -DCMAKE_SKIP_INSTALL_RPATH=OFF
-
-# requires ninja
-#BuildOption:    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-BuildOption:    -DCMAKE_SKIP_BUILD_RPATH=OFF
-BuildOption:    -DCMAKE_INSTALL_RPATH="%{tde_prefix}/%{_lib}"
 BuildOption:    -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
 BuildOption:    -DCONFIG_INSTALL_DIR="%{_sysconfdir}/trinity"
 BuildOption:    -DINCLUDE_INSTALL_DIR="%{tde_prefix}/include/tde"
