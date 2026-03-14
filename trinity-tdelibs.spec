@@ -18,22 +18,9 @@
 %bcond xt 1
 %bcond sudo 1
 
-# BUILD WARNING:
-#  Remove qt-devel and qt3-devel and any kde*-devel on your system !
-#  Having KDE libraries may cause FTBFS here !
-
-
-# TDE variables
-%define tde_epoch 2
-%if "%{?tde_version}" == ""
-%define tde_version 14.1.5
-%endif
-%define pkg_rel 7
-
 %define tde_pkg tdelibs
 
 %define tde_prefix /opt/trinity
-
 
 # breaks desktop files when not defined
 %define dont_fix_xdg 1
@@ -48,26 +35,25 @@
 
 
 Name:			trinity-%{tde_pkg}
-Version:		%{tde_version}
-Release:		%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
+Version:		14.1.5
+Release:		8
 Summary:		TDE Libraries
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
 
 License:		GPLv2+
 
-
-Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/core/%{tarball_name}-%{version}%{?preversion:~%{preversion}}.tar.xz
+Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{version}/main/core/%{tarball_name}-%{version}.tar.xz
 Source1:		%{name}-rpmlintrc
 
 BuildSystem:    cmake
 
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 BuildOption:    -DCMAKE_SKIP_RPATH=OFF
-BuildOption:    -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
-BuildOption:    -DCONFIG_INSTALL_DIR="%{_sysconfdir}/trinity"
-BuildOption:    -DINCLUDE_INSTALL_DIR="%{tde_prefix}/include/tde"
-BuildOption:    -DPKGCONFIG_INSTALL_DIR="%{tde_prefix}/%{_lib}/pkgconfig"
+BuildOption:    -DCMAKE_INSTALL_PREFIX=%{tde_prefix}
+BuildOption:    -DCONFIG_INSTALL_DIR=%{_sysconfdir}/trinity
+BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_prefix}/include/tde
+BuildOption:    -DPKGCONFIG_INSTALL_DIR=%{tde_prefix}/%{_lib}/pkgconfig
 BuildOption:    -DWITH_ALL_OPTIONS=ON -DWITH_ARTS=ON -DWITH_ALSA=ON
 BuildOption:    -DWITH_LIBART=ON -DWITH_LIBIDN=ON -DWITH_SSL=ON
 BuildOption:    -DWITH_CUPS=ON -DWITH_LUA=OFF -DWITH_TIFF=ON 
@@ -98,25 +84,13 @@ BuildOption:    -DWITH_XRANDR=%{!?with_xrandr:OFF}%{?with_xrandr:ON}
 BuildOption:    -DWITH_XCOMPOSITE=%{?with_xcomposite:ON}%{!?with_xcomposite:OFF}
 BuildOption:    -DWITH_HSPELL=%{?!with_hspell:OFF}%{?with_hspell:ON}
 
-Obsoletes:		tdelibs < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		tdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:		trinity-kdelibs < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-kdelibs = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:		trinity-kdelibs-apidocs < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-kdelibs-apidocs = %{?epoch:%{epoch}:}%{version}-%{release}
-
-
 # Trinity dependencies
-BuildRequires:	libtqt4-devel = %{tde_epoch}:4.2.0
-BuildRequires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
-BuildRequires:	libdbus-tqt-1-devel >= %{tde_epoch}:0.63
-BuildRequires:	libdbus-1-tqt-devel >= %{tde_epoch}:0.9
-BuildRequires:	trinity-filesystem >= %{tde_version}
-
-Requires:		trinity-arts >= %{tde_epoch}:1.5.10
-Requires:		trinity-filesystem >= %{tde_version}
-
-BuildRequires:	trinity-tde-cmake >= %{tde_version}
+BuildRequires:	pkgconfig(tqt)
+BuildRequires:	%{_lib}arts-devel
+BuildRequires:	pkgconfig(dbus-tqt)
+BuildRequires:	pkgconfig(dbus-1-tqt)
+BuildRequires:	trinity-filesystem >= %version
+BuildRequires:	trinity-tde-cmake >= %version
 
 %{!?with_clang:BuildRequires:	gcc-c++}
 
@@ -184,7 +158,7 @@ BuildRequires:	%{_lib}utempter-devel
 # AVAHI support
 %if %{with avahi}
 BuildRequires:	pkgconfig(avahi-client)
-BuildRequires:  trinity-avahi-tqt-devel
+BuildRequires:  pkgconfig(avahi-tqt)
 %endif
 
 # OPENEXR support
@@ -381,20 +355,6 @@ fi
 Summary:	TDE Libraries (Development files)
 Group:		Development/Libraries/X11
 Requires:	%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-Obsoletes:	tdelibs-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:	tdelibs-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:	trinity-kdelibs-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:	trinity-kdelibs-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-
-Requires:	libtqt3-mt-devel >= 3.5.0
-Requires:	libtqt4-devel = %{tde_epoch}:4.2.0
-Requires:	trinity-arts-devel >= %{tde_epoch}:1.5.10
-Requires:	pkgconfig(libart-2.0)
-Requires:	pkgconfig(libattr)
-Requires:	intltool
-%{?with_xcomposite:Requires: pkgconfig(xcomposite)}
-%{?with_xt:Requires: pkgconfig(xt)}
 
 %description devel
 This package includes the header files you will need to compile
