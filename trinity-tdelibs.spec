@@ -354,7 +354,7 @@ fi
 %package devel
 Summary:	TDE Libraries (Development files)
 Group:		Development/Libraries/X11
-Requires:	%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	%{name} = %{EVRD}
 
 %description devel
 This package includes the header files you will need to compile
@@ -379,7 +379,7 @@ applications for TDE.
 %conf -p
 unset QTDIR QTINC QTLIB
 export PATH="%{tde_prefix}/bin:${PATH}"
-export PKG_CONFIG_PATH="%{tde_prefix}/%{_lib}/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:%{tde_prefix}/%{_lib}/pkgconfig"
 export TDEDIR="%{tde_prefix}"
 
 %install -a
