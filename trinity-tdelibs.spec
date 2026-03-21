@@ -36,7 +36,7 @@
 
 Name:			trinity-%{tde_pkg}
 Version:		14.1.5
-Release:		8
+Release:		9
 Summary:		TDE Libraries
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
@@ -92,6 +92,9 @@ BuildRequires:	trinity-arts-devel
 BuildRequires:	trinity-filesystem >= %version
 BuildRequires:	trinity-tde-cmake >= %version
 BuildRequires:  tqt3-dev-tools
+
+Requires:       trinity-arts
+Requires:       trinity-filesystem >= %version
 
 %{!?with_clang:BuildRequires:	gcc-c++}
 
@@ -356,6 +359,12 @@ fi
 Summary:	TDE Libraries (Development files)
 Group:		Development/Libraries/X11
 Requires:	%{name} = %{EVRD}
+Requires:  pkgconfig(tqt-mt)
+Requires:  pkgconfig(tqt)
+Requires:  trinity-arts-devel
+Requires:  pkgconfig(libart-2.0)
+Requires:  pkgconfig(libattr)
+Requires:  intltool
 
 %description devel
 This package includes the header files you will need to compile
