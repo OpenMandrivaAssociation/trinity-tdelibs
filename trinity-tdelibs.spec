@@ -91,6 +91,7 @@ BuildRequires:	pkgconfig(dbus-1-tqt)
 BuildRequires:	trinity-arts-devel
 BuildRequires:	trinity-filesystem >= %version
 BuildRequires:	trinity-tde-cmake >= %version
+BuildRequires:  tqt3-dev-tools
 
 %{!?with_clang:BuildRequires:	gcc-c++}
 
