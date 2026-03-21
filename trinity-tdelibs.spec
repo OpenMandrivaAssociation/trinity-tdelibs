@@ -86,9 +86,9 @@ BuildOption:    -DWITH_HSPELL=%{?!with_hspell:OFF}%{?with_hspell:ON}
 
 # Trinity dependencies
 BuildRequires:	pkgconfig(tqt)
-BuildRequires:	%{_lib}arts-devel
 BuildRequires:	pkgconfig(dbus-tqt)
 BuildRequires:	pkgconfig(dbus-1-tqt)
+BuildRequires:	trinity-arts-devel
 BuildRequires:	trinity-filesystem >= %version
 BuildRequires:	trinity-tde-cmake >= %version
 
