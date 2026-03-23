@@ -36,7 +36,7 @@
 
 Name:			trinity-%{tde_pkg}
 Version:		14.1.5
-Release:		9
+Release:		10
 Summary:		TDE Libraries
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
@@ -361,9 +361,10 @@ Group:		Development/Libraries/X11
 Requires:	%{name} = %{EVRD}
 Requires:  pkgconfig(tqt-mt)
 Requires:  pkgconfig(tqt)
-Requires:  trinity-arts-devel
 Requires:  pkgconfig(libart-2.0)
 Requires:  pkgconfig(libattr)
+Requires:  trinity-arts-devel
+Requires:  tqt3-dev-tools
 Requires:  intltool
 
 %description devel
