@@ -29,14 +29,14 @@
 %define _disable_rebuild_configure 1
 
 # fixes error: Empty %files file …/debugsourcefiles.list
-%define _debugsource_template %{nil}
+%undefine _debugsource_template
 
 %define tarball_name %{tde_pkg}-trinity
 
 
 Name:			trinity-%{tde_pkg}
-Version:		14.1.5
-Release:		10
+Version:		14.1.6
+Release:		1
 Summary:		TDE Libraries
 Group:			System/GUI/Other
 URL:			http://www.trinitydesktop.org/
